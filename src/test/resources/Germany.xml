@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<cities>
+    <city name="City1">
+        <population>1 mln</population>
+    </city>
+    <city name="City2">
+        <population>2 mln</population>
+    </city>
+</cities>

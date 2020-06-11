@@ -2,24 +2,21 @@ package com.mridasoft.accessholding.camel;
 
 import org.apache.camel.*;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.spring.junit5.CamelSpringTest;
+import org.apache.camel.test.spring.junit5.CamelSpringBootTest;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-@CamelSpringTest
-@ContextConfiguration
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@CamelSpringBootTest
+@SpringBootTest
 class PopulationDataFileProcessingRouteTest {
 
     @Autowired
@@ -32,17 +29,26 @@ class PopulationDataFileProcessingRouteTest {
     protected ProducerTemplate start;
 
     @Test
-    public void testPopulationRecordProcessing() throws Exception {
+    public void camelStarts() {
         assertEquals(ServiceStatus.Started, camelContext.getStatus());
-        mockEndpoint.expectedBodiesReceived("David");
-        start.sendBody(loadFileContent("PopulationRecord1.csv"));
+        assertThat("Should have 2 routes", camelContext.getRoutes().size() == 2);
+    }
+
+    @Test
+    public void testPopulationRecordProcessing() throws Exception {
+        String ukXmlOut = loadFileContent("/Uk.xml");
+        String germanyXmlOut = loadFileContent("/Germany.xml");
+        mockEndpoint.expectedBodiesReceivedInAnyOrder(ukXmlOut,germanyXmlOut);
+        
+        start.sendBody(loadFileContent("/PopulationRecord1.csv"));
 
         MockEndpoint.assertIsSatisfied(camelContext);
     }
 
     private String loadFileContent(String fn) throws IOException {
-        ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource(fn).getFile());
-        return FileUtils.readFileToString(file, "UTF-8");
+        return IOUtils.toString(
+                this.getClass().getResourceAsStream(fn),
+                "UTF-8"
+        );
     }
 }
