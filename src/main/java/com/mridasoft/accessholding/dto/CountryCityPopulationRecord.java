@@ -1,10 +1,10 @@
-package com.mridasoft.accessholding.model;
+package com.mridasoft.accessholding.dto;
 
 import org.apache.camel.dataformat.bindy.annotation.CsvRecord;
 import org.apache.camel.dataformat.bindy.annotation.DataField;
 
 @CsvRecord(separator = ",")
-public class CityPopulation {
+public class CountryCityPopulationRecord {
 	
 	@DataField(pos = 1)
     private String country;
