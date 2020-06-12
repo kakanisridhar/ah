@@ -16,12 +16,13 @@ ah_access-holding-app_1 in above refers to image name - it may have different na
 3. Example csv input is available in root folder
 
 copy csv file sample_input.xml to data folder
-cp  sample_input.csv data/test1.csv
+
+cp sample_input.csv data/test1.csv
 
 4. outputs related to countries will be generated in out folder
 
 execute the below commands to view contents of output files
 
-cd out
-ls -ltr
-cat UK.xml
+* cd out
+* ls -ltr
+* cat UK.xml
