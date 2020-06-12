@@ -29,6 +29,7 @@ public class PopulationDataFileProcessingRoute extends RouteBuilder  {
 		jaxbDataFormat.setContextPath(CountryCityPopulation.class.getName());
 
 		from(dataReaderRoute)
+		.log("processing file ${in.headers.CamelFileName}")
 		.split(body().tokenize("\n"))
         	.unmarshal()
         	.bindy(BindyType.Csv, CountryCityPopulationRecord.class)
@@ -36,7 +37,9 @@ public class PopulationDataFileProcessingRoute extends RouteBuilder  {
         	.completionPredicate(simple("${exchangeProperty.CamelSplitComplete} == true"))
          .bean(TransformationUtils.class,"populationMapToList")	
          .split(body())    
-         	.to(xmlWriterRoute);
+         	.to(xmlWriterRoute)
+         	.end()
+         .log("Done prcessing of file ${in.headers.CamelFileName}");
 		
 		from(xmlWriterRoute)
 		.process(new FileNameProcessor())
